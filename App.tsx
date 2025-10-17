@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import PhoneScreen from "./src/screens/PhoneScreen";
+import OtpScreen from "./src/screens/OtpScreen";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:1337";
 
@@ -20,7 +22,9 @@ function EventsScreen({ navigation }: any) {
     (async () => {
       try {
         const res = await axios.get(`${API_URL}/api/events`);
+        // Strapi v5 default response is flat (no attributes)
         setEvents(res.data?.data ?? []);
+        console.log(res.data);
       } catch (e) {
         console.error(e);
       } finally {
@@ -34,11 +38,15 @@ function EventsScreen({ navigation }: any) {
   return (
     <FlatList
       data={events}
-      keyExtractor={(item) => String(item.id)}
+      keyExtractor={(item) => String(item.documentId || item.id)}
       contentContainerStyle={{ padding: 16 }}
       renderItem={({ item }) => (
         <Pressable
-          onPress={() => navigation.navigate("EventDetails", { id: item.id })}
+          onPress={() =>
+            navigation.navigate("EventDetails", {
+              documentId: item.documentId || String(item.id),
+            })
+          }
           style={{
             padding: 16,
             borderWidth: 1,
@@ -47,13 +55,11 @@ function EventsScreen({ navigation }: any) {
             marginBottom: 12,
           }}
         >
-          <Text style={{ fontSize: 16, fontWeight: "600" }}>
-            {item.attributes?.title}
-          </Text>
+          <Text style={{ fontSize: 16, fontWeight: "600" }}>{item.title}</Text>
           <Text>
-            {item.attributes?.location} • {item.attributes?.date}
+            {item.date} • {item.location}
           </Text>
-          <Text>{item.attributes?.price} KWD</Text>
+          <Text>{item.price} KWD</Text>
         </Pressable>
       )}
     />
@@ -61,34 +67,36 @@ function EventsScreen({ navigation }: any) {
 }
 
 function EventDetailsScreen({ route }: any) {
-  const { id } = route.params;
+  const { documentId } = route.params;
   const [loading, setLoading] = useState(true);
   const [event, setEvent] = useState<any>(null);
   useEffect(() => {
     (async () => {
       try {
-        const res = await axios.get(`${API_URL}/api/events/${id}`);
-        setEvent(res.data?.data ?? null);
+        // Fetch by documentId (Strapi v5)
+        const res = await axios.get(`${API_URL}/api/events`, {
+          params: { "filters[documentId][$eq]": documentId },
+        });
+        const item = res.data?.data?.[0] ?? null;
+        setEvent(item);
       } catch (e) {
         console.error(e);
       } finally {
         setLoading(false);
       }
     })();
-  }, [id]);
+  }, [documentId]);
 
   if (loading) return <ActivityIndicator style={{ marginTop: 40 }} />;
   if (!event) return <Text style={{ margin: 16 }}>Event not found</Text>;
 
   return (
     <View style={{ padding: 16 }}>
-      <Text style={{ fontSize: 20, fontWeight: "700" }}>
-        {event.attributes?.title}
-      </Text>
-      <Text style={{ marginTop: 8 }}>{event.attributes?.description}</Text>
-      <Text style={{ marginTop: 8 }}>{event.attributes?.location}</Text>
-      <Text style={{ marginTop: 8 }}>{event.attributes?.date}</Text>
-      <Text style={{ marginTop: 8 }}>{event.attributes?.price} KWD</Text>
+      <Text style={{ fontSize: 20, fontWeight: "700" }}>{event.title}</Text>
+      <Text style={{ marginTop: 8 }}>{event.description}</Text>
+      <Text style={{ marginTop: 8 }}>{event.location}</Text>
+      <Text style={{ marginTop: 8 }}>{event.date}</Text>
+      <Text style={{ marginTop: 8 }}>{event.price} KWD</Text>
     </View>
   );
 }
@@ -103,6 +111,23 @@ function EventsStack() {
   );
 }
 
+function AccountStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Phone"
+        component={PhoneScreen}
+        options={{ title: "Get started" }}
+      />
+      <Stack.Screen
+        name="Otp"
+        component={OtpScreen}
+        options={{ title: "Verify" }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 const Tab = createBottomTabNavigator();
 export default function App() {
   return (
@@ -111,6 +136,11 @@ export default function App() {
         <Tab.Screen
           name="Browse"
           component={EventsStack}
+          options={{ headerShown: false }}
+        />
+        <Tab.Screen
+          name="Account"
+          component={AccountStack}
           options={{ headerShown: false }}
         />
       </Tab.Navigator>
