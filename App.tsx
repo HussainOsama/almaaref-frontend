@@ -12,6 +12,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import PhoneScreen from "./src/screens/PhoneScreen";
 import OtpScreen from "./src/screens/OtpScreen";
+import SplashScreen from "./src/screens/SplashScreen";
+import RoleSelectionScreen from "./src/screens/RoleSelectionScreen";
+import RegisterScreen from "./src/screens/RegisterScreen";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:1337";
 
@@ -22,9 +25,7 @@ function EventsScreen({ navigation }: any) {
     (async () => {
       try {
         const res = await axios.get(`${API_URL}/api/events`);
-        // Strapi v5 default response is flat (no attributes)
         setEvents(res.data?.data ?? []);
-        console.log(res.data);
       } catch (e) {
         console.error(e);
       } finally {
@@ -73,7 +74,6 @@ function EventDetailsScreen({ route }: any) {
   useEffect(() => {
     (async () => {
       try {
-        // Fetch by documentId (Strapi v5)
         const res = await axios.get(`${API_URL}/api/events`, {
           params: { "filters[documentId][$eq]": documentId },
         });
@@ -129,21 +129,38 @@ function AccountStack() {
 }
 
 const Tab = createBottomTabNavigator();
+function MainTabs() {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen
+        name="Browse"
+        component={EventsStack}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="Account"
+        component={AccountStack}
+        options={{ headerShown: false }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+const RootStack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen
-          name="Browse"
-          component={EventsStack}
-          options={{ headerShown: false }}
+      <RootStack.Navigator screenOptions={{ headerShown: false }}>
+        <RootStack.Screen name="Splash" component={SplashScreen} />
+        <RootStack.Screen
+          name="RoleSelection"
+          component={RoleSelectionScreen}
         />
-        <Tab.Screen
-          name="Account"
-          component={AccountStack}
-          options={{ headerShown: false }}
-        />
-      </Tab.Navigator>
+        <RootStack.Screen name="Register" component={RegisterScreen} />
+        <RootStack.Screen name="ParentDashboard" component={MainTabs} />
+        <RootStack.Screen name="Browse" component={MainTabs} />
+        <RootStack.Screen name="Account" component={AccountStack} />
+      </RootStack.Navigator>
     </NavigationContainer>
   );
 }
