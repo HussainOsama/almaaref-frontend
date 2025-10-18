@@ -113,7 +113,9 @@ export default function PhoneAuthModal({ onClose }: { onClose: () => void }) {
           </>
         ) : (
           <>
-            <Text style={{ color: "#666", marginBottom: 8 }}>
+            <Text
+              style={{ color: "#666", marginBottom: 8, textAlign: "right" }}
+            >
               أدخل رمز التحقق المكون من 6 أرقام
             </Text>
             <TextInput
@@ -126,6 +128,7 @@ export default function PhoneAuthModal({ onClose }: { onClose: () => void }) {
                 borderColor: "#ddd",
                 padding: 12,
                 borderRadius: 12,
+                textAlign: "right",
               }}
             />
             <Pressable
