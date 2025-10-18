@@ -9,6 +9,13 @@ type AppState = {
   setParentId: (id: number) => void;
   parentDocumentId?: string;
   setParentDocumentId: (id: string) => void;
+  isLoggedIn: boolean;
+  accountType: "parent" | "student" | null;
+  setIsLoggedIn: (v: boolean) => void;
+  setAccountType: (t: "parent" | "student" | null) => void;
+  logout: () => void;
+  token?: string;
+  setToken: (t?: string) => void;
 };
 
 export const useAppStore = create<AppState>((set) => ({
@@ -20,4 +27,20 @@ export const useAppStore = create<AppState>((set) => ({
   setParentId: (id) => set({ parentId: id }),
   parentDocumentId: undefined,
   setParentDocumentId: (id) => set({ parentDocumentId: id }),
+  isLoggedIn: false,
+  accountType: null,
+  setIsLoggedIn: (v) => set({ isLoggedIn: v }),
+  setAccountType: (t) => set({ accountType: t }),
+  token: undefined,
+  setToken: (t?: string) => set({ token: t }),
+  logout: () =>
+    set({
+      isLoggedIn: false,
+      accountType: null,
+      roleType: null,
+      phone: "",
+      parentId: undefined,
+      parentDocumentId: undefined,
+      token: undefined,
+    }),
 }));

@@ -8,13 +8,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function ChildrenListScreen({ navigation }: any) {
   const isFocused = useIsFocused();
   const parentDocumentId = useAppStore((s) => s.parentDocumentId);
+  console.log("parentDocumentId", parentDocumentId);
   const [data, setData] = useState<any[]>([]);
+  console.log("data", data);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     (async () => {
       if (!parentDocumentId) return;
       const rows = await listStudentsByParentDoc(parentDocumentId);
+      console.log("rows", rows);
       setData(rows);
     })();
   }, [isFocused, parentDocumentId]);
@@ -128,19 +131,6 @@ export default function ChildrenListScreen({ navigation }: any) {
         قائمة الأطفال المسجلين لديك
       </Text>
 
-      <Pressable
-        onPress={() => navigation.navigate("AddChild")}
-        style={{
-          marginBottom: 12,
-          backgroundColor: "#1d3f2d",
-          padding: 14,
-          borderRadius: 14,
-          alignItems: "center",
-        }}
-      >
-        <Text style={{ color: "#fff", fontSize: 16 }}>+ إضافة طفل جديد</Text>
-      </Pressable>
-
       <FlatList
         data={data}
         keyExtractor={(item: any) => String(item.id || item.documentId)}
@@ -153,7 +143,44 @@ export default function ChildrenListScreen({ navigation }: any) {
             <Text style={{ color: "#666" }}>لا يوجد أطفال بعد</Text>
           </View>
         }
+        ListFooterComponent={
+          <View style={{ paddingVertical: 12 }}>
+            <Pressable
+              onPress={() => navigation.navigate("AddChild")}
+              style={{
+                backgroundColor: "#1d3f2d",
+                padding: 14,
+                borderRadius: 14,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "#fff", fontSize: 16 }}>
+                + إضافة طفل جديد
+              </Text>
+            </Pressable>
+          </View>
+        }
       />
+
+      <View style={{ position: "absolute", left: 20, right: 20, bottom: 20 }}>
+        <Pressable
+          onPress={() =>
+            navigation.navigate("ParentDashboard", { screen: "Home" })
+          }
+          style={{
+            padding: 14,
+            borderRadius: 14,
+            alignItems: "center",
+            borderWidth: 1,
+            borderColor: "#1d3f2d",
+            backgroundColor: "#fff",
+          }}
+        >
+          <Text style={{ color: "#1d3f2d", fontSize: 16 }}>
+            الذهاب إلى الرئيسية
+          </Text>
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 }

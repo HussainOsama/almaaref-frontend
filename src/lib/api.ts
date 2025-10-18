@@ -18,6 +18,11 @@ export async function verifyOtp(phone: string, code: string) {
   return r.data;
 }
 
+export async function passwordLogin(phone: string, password: string) {
+  const r = await api.post("/api/auth/password-login", { phone, password });
+  return r.data;
+}
+
 // Parent and Student helpers
 export async function createParent(payload: {
   name: string;
@@ -50,5 +55,6 @@ export async function listStudentsByParentDoc(parentDocumentId: string) {
   const r = await api.get("/api/students", {
     params: { "filters[parent][documentId][$eq]": parentDocumentId },
   });
+  console.log("r", r.data);
   return r.data?.data ?? [];
 }

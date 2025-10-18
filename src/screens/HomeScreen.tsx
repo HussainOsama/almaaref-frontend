@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Image, Pressable, Modal } from "react-native";
 import PhoneAuthModal from "../screens/PhoneAuthModal";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function HomeScreen() {
+export default function HomeScreen({ route }: any) {
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (route?.params?.openAuth) {
+      setOpen(true);
+    }
+  }, [route?.params?.openAuth]);
   return (
     <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
       <View style={{ flex: 1, backgroundColor: "#fff" }}>

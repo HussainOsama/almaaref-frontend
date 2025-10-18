@@ -22,6 +22,10 @@ import ParentSignupStep3 from "./src/screens/ParentSignupStep3";
 import AddChildScreen from "./src/screens/AddChildScreen";
 import ChildrenListScreen from "./src/screens/ChildrenListScreen";
 import StudentSignupScreen from "./src/screens/StudentSignupScreen";
+import SettingsScreen from "./src/screens/SettingsScreen";
+import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useAppStore } from "./src/store/app";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:1337";
 
@@ -137,17 +141,50 @@ function AccountStack() {
 
 const Tab = createBottomTabNavigator();
 function MainTabs() {
+  const isLoggedIn = useAppStore((s) => s.isLoggedIn);
+  const accountType = useAppStore((s) => s.accountType);
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      initialRouteName="Home"
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarActiveTintColor: "#1d3f2d",
+        tabBarInactiveTintColor: "#999",
+        tabBarStyle: { height: 60 },
+        tabBarIcon: ({ color, size }) => {
+          const name =
+            route.name === "Home"
+              ? "home"
+              : route.name === "Browse"
+              ? "calendar"
+              : route.name === "Children"
+              ? "people"
+              : "settings";
+          return <Ionicons name={name as any} size={size} color={color} />;
+        },
+      })}
+    >
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ title: "الرئيسية" }}
+      />
       <Tab.Screen
         name="Browse"
         component={EventsStack}
-        options={{ headerShown: false }}
+        options={{ title: "الفعاليات" }}
       />
+      {isLoggedIn && accountType === "parent" ? (
+        <Tab.Screen
+          name="Children"
+          component={ChildrenListScreen}
+          options={{ title: "أبنائي" }}
+        />
+      ) : null}
       <Tab.Screen
-        name="Account"
-        component={AccountStack}
-        options={{ headerShown: false }}
+        name="Settings"
+        component={SettingsScreen}
+        options={{ title: "الإعدادات" }}
       />
     </Tab.Navigator>
   );
@@ -156,37 +193,40 @@ function MainTabs() {
 const RootStack = createNativeStackNavigator();
 export default function App() {
   return (
-    <NavigationContainer>
-      <RootStack.Navigator screenOptions={{ headerShown: false }}>
-        <RootStack.Screen name="Home" component={HomeScreen} />
-        <RootStack.Screen name="Splash" component={SplashScreen} />
-        <RootStack.Screen
-          name="RoleSelection"
-          component={RoleSelectionScreen}
-        />
-        <RootStack.Screen name="Register" component={RegisterScreen} />
-        <RootStack.Screen
-          name="ParentSignupStep1"
-          component={ParentSignupStep1}
-        />
-        <RootStack.Screen
-          name="ParentSignupStep2"
-          component={ParentSignupStep2}
-        />
-        <RootStack.Screen
-          name="ParentSignupStep3"
-          component={ParentSignupStep3}
-        />
-        <RootStack.Screen name="AddChild" component={AddChildScreen} />
-        <RootStack.Screen name="ChildrenList" component={ChildrenListScreen} />
-        <RootStack.Screen
-          name="StudentSignup"
-          component={StudentSignupScreen}
-        />
-        <RootStack.Screen name="ParentDashboard" component={MainTabs} />
-        <RootStack.Screen name="Browse" component={MainTabs} />
-        <RootStack.Screen name="Account" component={AccountStack} />
-      </RootStack.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <RootStack.Navigator screenOptions={{ headerShown: false }}>
+          <RootStack.Screen name="ParentDashboard" component={MainTabs} />
+          <RootStack.Screen name="Splash" component={SplashScreen} />
+          <RootStack.Screen
+            name="RoleSelection"
+            component={RoleSelectionScreen}
+          />
+          <RootStack.Screen name="Register" component={RegisterScreen} />
+          <RootStack.Screen
+            name="ParentSignupStep1"
+            component={ParentSignupStep1}
+          />
+          <RootStack.Screen
+            name="ParentSignupStep2"
+            component={ParentSignupStep2}
+          />
+          <RootStack.Screen
+            name="ParentSignupStep3"
+            component={ParentSignupStep3}
+          />
+          <RootStack.Screen name="AddChild" component={AddChildScreen} />
+          <RootStack.Screen
+            name="ChildrenList"
+            component={ChildrenListScreen}
+          />
+          <RootStack.Screen
+            name="StudentSignup"
+            component={StudentSignupScreen}
+          />
+          <RootStack.Screen name="Account" component={AccountStack} />
+        </RootStack.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }

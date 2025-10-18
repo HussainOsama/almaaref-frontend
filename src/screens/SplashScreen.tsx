@@ -7,12 +7,18 @@ import {
   I18nManager,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAppStore } from "../store/app";
+import { api } from "../lib/api";
 import { LinearGradient } from "expo-linear-gradient";
 
 const darkGreen = "#1d3f2d";
 const beige = "#ffc44d";
 
 export default function SplashScreen({ navigation }: any) {
+  const setIsLoggedIn = useAppStore((s) => s.setIsLoggedIn);
+  const setAccountType = useAppStore((s) => s.setAccountType);
+  const setParentDocumentId = useAppStore((s) => s.setParentDocumentId);
+  const setToken = useAppStore((s) => s.setToken);
   useEffect(() => {
     // Ensure RTL capability (doesn't force reload in Expo Go)
     I18nManager.allowRTL(true);
@@ -20,7 +26,14 @@ export default function SplashScreen({ navigation }: any) {
       try {
         const token = await AsyncStorage.getItem("token");
         const role = await AsyncStorage.getItem("roleType");
+        const parentDoc = await AsyncStorage.getItem("parentDocumentId");
         if (token && role) {
+          // hydrate client auth header and app store
+          api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+          setToken(token);
+          setIsLoggedIn(true);
+          setAccountType(role === "parent" ? "parent" : "student");
+          if (parentDoc) setParentDocumentId(parentDoc);
           if (role === "parent") navigation.replace("ParentDashboard");
           else navigation.replace("Browse");
           return;
