@@ -7,6 +7,7 @@ import {
   FlatList,
   ActivityIndicator,
   Pressable,
+  Image,
 } from "react-native";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -86,7 +87,7 @@ function EventDetailsScreen({ route }: any) {
     (async () => {
       try {
         const res = await axios.get(`${API_URL}/api/events`, {
-          params: { "filters[documentId][$eq]": documentId },
+          params: { "filters[documentId][$eq]": documentId, populate: "image" },
         });
         const item = res.data?.data?.[0] ?? null;
         setEvent(item);
@@ -101,13 +102,35 @@ function EventDetailsScreen({ route }: any) {
   if (loading) return <ActivityIndicator style={{ marginTop: 40 }} />;
   if (!event) return <Text style={{ margin: 16 }}>Event not found</Text>;
 
+  const img = event?.image || event?.attributes?.image;
+  const url = img?.url || img?.data?.attributes?.url;
+
   return (
     <View style={{ padding: 16 }}>
-      <Text style={{ fontSize: 20, fontWeight: "700" }}>{event.title}</Text>
-      <Text style={{ marginTop: 8 }}>{event.description}</Text>
-      <Text style={{ marginTop: 8 }}>{event.location}</Text>
-      <Text style={{ marginTop: 8 }}>{event.date}</Text>
-      <Text style={{ marginTop: 8 }}>{event.price} KWD</Text>
+      {url ? (
+        <View style={{ marginBottom: 12 }}>
+          <Image
+            source={{ uri: `${API_URL}${url}` }}
+            style={{ width: "100%", aspectRatio: 1, borderRadius: 12 }}
+            resizeMode="cover"
+          />
+        </View>
+      ) : null}
+      <Text style={{ fontSize: 20, fontWeight: "700" }}>
+        {event.title || event.attributes?.title}
+      </Text>
+      <Text style={{ marginTop: 8 }}>
+        {event.description || event.attributes?.description}
+      </Text>
+      <Text style={{ marginTop: 8 }}>
+        {event.location || event.attributes?.location}
+      </Text>
+      <Text style={{ marginTop: 8 }}>
+        {event.date || event.attributes?.date}
+      </Text>
+      <Text style={{ marginTop: 8 }}>
+        {event.price || event.attributes?.price} KWD
+      </Text>
     </View>
   );
 }
@@ -169,11 +192,7 @@ function MainTabs() {
         component={HomeScreen}
         options={{ title: "الرئيسية" }}
       />
-      <Tab.Screen
-        name="Browse"
-        component={EventsStack}
-        options={{ title: "الفعاليات" }}
-      />
+
       {isLoggedIn && accountType === "parent" ? (
         <Tab.Screen
           name="Children"
@@ -225,6 +244,10 @@ export default function App() {
             component={StudentSignupScreen}
           />
           <RootStack.Screen name="Account" component={AccountStack} />
+          <RootStack.Screen
+            name="EventDetails"
+            component={EventDetailsScreen}
+          />
         </RootStack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

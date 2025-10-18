@@ -23,6 +23,11 @@ export async function passwordLogin(phone: string, password: string) {
   return r.data;
 }
 
+export async function listEvents() {
+  const r = await api.get("/api/events", { params: { populate: "image" } });
+  return r.data?.data ?? [];
+}
+
 // Parent and Student helpers
 export async function createParent(payload: {
   name: string;

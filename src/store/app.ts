@@ -16,6 +16,8 @@ type AppState = {
   logout: () => void;
   token?: string;
   setToken: (t?: string) => void;
+  pendingEventDocumentId?: string;
+  setPendingEventDocumentId: (id?: string) => void;
 };
 
 export const useAppStore = create<AppState>((set) => ({
@@ -33,6 +35,9 @@ export const useAppStore = create<AppState>((set) => ({
   setAccountType: (t) => set({ accountType: t }),
   token: undefined,
   setToken: (t?: string) => set({ token: t }),
+  pendingEventDocumentId: undefined,
+  setPendingEventDocumentId: (id?: string) =>
+    set({ pendingEventDocumentId: id }),
   logout: () =>
     set({
       isLoggedIn: false,
@@ -42,5 +47,6 @@ export const useAppStore = create<AppState>((set) => ({
       parentId: undefined,
       parentDocumentId: undefined,
       token: undefined,
+      pendingEventDocumentId: undefined,
     }),
 }));
