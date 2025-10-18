@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppStore } from "../store/app";
 import { useAuthStore } from "../store/auth";
 import { useRegisterStore } from "../store/register";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const darkGreen = "#1d3f2d";
 const darkBrown = "#241c10";
@@ -102,11 +103,12 @@ export default function RegisterScreen({ navigation }: any) {
   }, [register, roleType]);
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
+    <SafeAreaView edges={["top"]} style={{ flex: 1, paddingHorizontal: 40 }}>
       <View style={{ alignItems: "center", marginTop: 24, marginBottom: 16 }}>
         <Image
           source={require("../../assets/icon.png")}
-          style={{ width: 56, height: 56 }}
+          style={{ width: "100%", height: 64 }}
+          resizeMode="contain"
         />
       </View>
       <Text
@@ -213,6 +215,6 @@ export default function RegisterScreen({ navigation }: any) {
       >
         <Text style={{ color: darkGreen }}>لدي حساب بالفعل؟ تسجيل الدخول</Text>
       </Pressable>
-    </View>
+    </SafeAreaView>
   );
 }

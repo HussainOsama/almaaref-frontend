@@ -23,10 +23,19 @@ function RoleCard({ title, subtitle, selected, onPress }: any) {
         marginBottom: 12,
       }}
     >
-      <Text style={{ fontSize: 18, fontWeight: "700", color: darkBrown }}>
+      <Text
+        style={{
+          fontSize: 18,
+          fontWeight: "700",
+          color: darkBrown,
+          textAlign: "right",
+        }}
+      >
         {title}
       </Text>
-      <Text style={{ color: "#555", marginTop: 6 }}>{subtitle}</Text>
+      <Text style={{ color: "#555", marginTop: 6, textAlign: "right" }}>
+        {subtitle}
+      </Text>
     </Pressable>
   );
 }
@@ -40,7 +49,8 @@ export default function RoleSelectionScreen({ navigation }: any) {
       <View style={{ alignItems: "center", marginTop: 36, marginBottom: 24 }}>
         <Image
           source={require("../../assets/icon.png")}
-          style={{ width: 64, height: 64 }}
+          style={{ width: "100%", height: 64 }}
+          resizeMode="contain"
         />
       </View>
       <Text
@@ -65,13 +75,13 @@ export default function RoleSelectionScreen({ navigation }: any) {
       </Text>
 
       <RoleCard
-        title="🧑‍👩‍👧 ولي أمر (Parent)"
+        title="👤 ولي أمر"
         subtitle="يمكنك إدارة أكثر من طالب."
         selected={role === "parent"}
         onPress={() => setRole("parent")}
       />
       <RoleCard
-        title="🎓 طالب (Student)"
+        title="🎓 طالب"
         subtitle="يمكنك التسجيل في الفعاليات بنفسك."
         selected={role === "student"}
         onPress={() => setRole("student")}
@@ -80,9 +90,12 @@ export default function RoleSelectionScreen({ navigation }: any) {
       <Pressable
         disabled={!role}
         onPress={() => {
-          if (role) {
-            setRoleType(role);
-            navigation.navigate("Register");
+          if (!role) return;
+          setRoleType(role);
+          if (role === "parent") {
+            navigation.replace("ParentSignupStep1");
+          } else {
+            navigation.replace("StudentSignup");
           }
         }}
         style={{

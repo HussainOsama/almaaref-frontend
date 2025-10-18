@@ -15,6 +15,13 @@ import OtpScreen from "./src/screens/OtpScreen";
 import SplashScreen from "./src/screens/SplashScreen";
 import RoleSelectionScreen from "./src/screens/RoleSelectionScreen";
 import RegisterScreen from "./src/screens/RegisterScreen";
+import HomeScreen from "./src/screens/HomeScreen";
+import ParentSignupStep1 from "./src/screens/ParentSignupStep1";
+import ParentSignupStep2 from "./src/screens/ParentSignupStep2";
+import ParentSignupStep3 from "./src/screens/ParentSignupStep3";
+import AddChildScreen from "./src/screens/AddChildScreen";
+import ChildrenListScreen from "./src/screens/ChildrenListScreen";
+import StudentSignupScreen from "./src/screens/StudentSignupScreen";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:1337";
 
@@ -151,12 +158,31 @@ export default function App() {
   return (
     <NavigationContainer>
       <RootStack.Navigator screenOptions={{ headerShown: false }}>
+        <RootStack.Screen name="Home" component={HomeScreen} />
         <RootStack.Screen name="Splash" component={SplashScreen} />
         <RootStack.Screen
           name="RoleSelection"
           component={RoleSelectionScreen}
         />
         <RootStack.Screen name="Register" component={RegisterScreen} />
+        <RootStack.Screen
+          name="ParentSignupStep1"
+          component={ParentSignupStep1}
+        />
+        <RootStack.Screen
+          name="ParentSignupStep2"
+          component={ParentSignupStep2}
+        />
+        <RootStack.Screen
+          name="ParentSignupStep3"
+          component={ParentSignupStep3}
+        />
+        <RootStack.Screen name="AddChild" component={AddChildScreen} />
+        <RootStack.Screen name="ChildrenList" component={ChildrenListScreen} />
+        <RootStack.Screen
+          name="StudentSignup"
+          component={StudentSignupScreen}
+        />
         <RootStack.Screen name="ParentDashboard" component={MainTabs} />
         <RootStack.Screen name="Browse" component={MainTabs} />
         <RootStack.Screen name="Account" component={AccountStack} />
