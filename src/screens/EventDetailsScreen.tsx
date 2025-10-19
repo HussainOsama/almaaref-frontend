@@ -1,8 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator, Image, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Pressable,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
+import { useAppStore } from "../store/app";
+import { useNavigation } from "@react-navigation/native";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:1337";
 
@@ -10,6 +19,8 @@ export default function EventDetailsScreen({ route }: any) {
   const { documentId } = route.params;
   const [loading, setLoading] = useState(true);
   const [event, setEvent] = useState<any>(null);
+  const parentDocumentId = useAppStore((s) => s.parentDocumentId);
+  const navigation = useNavigation<any>();
 
   useEffect(() => {
     (async () => {
@@ -138,8 +149,34 @@ export default function EventDetailsScreen({ route }: any) {
               {description}
             </Text>
           ) : null}
+          <View style={{ height: 100 }} />
         </View>
       </ScrollView>
+
+      {parentDocumentId ? (
+        <Pressable
+          onPress={() =>
+            navigation.navigate("SelectChildren", {
+              eventDocumentId: documentId,
+              eventPrice: price,
+            })
+          }
+          style={{
+            position: "absolute",
+            right: 16,
+            left: 16,
+            bottom: 20,
+            backgroundColor: "#1d3f2d",
+            paddingVertical: 16,
+            borderRadius: 9999,
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: "#fff", fontWeight: "700" }}>
+            تسجيل أحد الأبناء في الدورة
+          </Text>
+        </Pressable>
+      ) : null}
     </SafeAreaView>
   );
 }

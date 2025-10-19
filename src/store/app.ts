@@ -18,6 +18,16 @@ type AppState = {
   setToken: (t?: string) => void;
   pendingEventDocumentId?: string;
   setPendingEventDocumentId: (id?: string) => void;
+  user?: {
+    id?: number;
+    name?: string;
+    phone?: string;
+    email?: string;
+    roleType?: "father" | "mother" | "student";
+    secondary_phone?: string;
+    avatarUrl?: string;
+  };
+  setUser: (u?: AppState["user"]) => void;
 };
 
 export const useAppStore = create<AppState>((set) => ({
@@ -32,12 +42,14 @@ export const useAppStore = create<AppState>((set) => ({
   isLoggedIn: false,
   accountType: null,
   setIsLoggedIn: (v) => set({ isLoggedIn: v }),
-  setAccountType: (t) => set({ accountType: t }),
+  setAccountType: (t) => set({ accountType: t })
   token: undefined,
   setToken: (t?: string) => set({ token: t }),
   pendingEventDocumentId: undefined,
   setPendingEventDocumentId: (id?: string) =>
     set({ pendingEventDocumentId: id }),
+  user: undefined,
+  setUser: (u) => set({ user: u }),
   logout: () =>
     set({
       isLoggedIn: false,
@@ -48,5 +60,6 @@ export const useAppStore = create<AppState>((set) => ({
       parentDocumentId: undefined,
       token: undefined,
       pendingEventDocumentId: undefined,
+      user: undefined,
     }),
 }));

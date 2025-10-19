@@ -1,14 +1,17 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, Linking } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppStore } from "../store/app";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function SettingsScreen({ navigation }: any) {
   const isLoggedIn = useAppStore((s) => s.isLoggedIn);
   const accountType = useAppStore((s) => s.accountType);
   const phone = useAppStore((s) => s.phone);
   const logout = useAppStore((s) => s.logout);
+  const user = useAppStore((s) => s.user);
+  console.log(user);
 
   const handleLogout = async () => {
     try {
@@ -32,83 +35,123 @@ export default function SettingsScreen({ navigation }: any) {
             padding: 16,
             borderWidth: 1,
             borderColor: "#eee",
+            flexDirection: "row-reverse",
+            alignItems: "center",
+            gap: 12,
           }}
         >
-          <Text style={{ textAlign: "right" }}>الحالة: مسجّل الدخول</Text>
-          <Text style={{ textAlign: "right" }}>
-            نوع الحساب: {accountType === "parent" ? "ولي أمر" : "طالب"}
-          </Text>
-          <Text style={{ textAlign: "right" }}>رقم الهاتف: {phone || "—"}</Text>
-        </View>
-      ) : (
-        <View
-          style={{
-            marginTop: 16,
-            backgroundColor: "#fff",
-            borderRadius: 16,
-            padding: 16,
-            borderWidth: 1,
-            borderColor: "#eee",
-          }}
-        >
-          <Text style={{ textAlign: "right" }}>أنت غير مسجّل الدخول</Text>
-          <Pressable
-            onPress={() =>
-              navigation.navigate("ParentDashboard", {
-                screen: "Home",
-                params: { openAuth: true },
-              })
-            }
+          <View
             style={{
-              marginTop: 10,
-              backgroundColor: "#1d3f2d",
-              padding: 12,
-              borderRadius: 12,
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "#fff" }}>ابدأ التسجيل</Text>
-          </Pressable>
-        </View>
-      )}
-
-      {/* <View style={{ marginTop: 24, gap: 12 }}>
-        <Pressable
-          onPress={() => navigation.navigate("Home")}
-          style={{
-            padding: 12,
-            borderWidth: 1,
-            borderColor: "#eee",
-            borderRadius: 12,
-          }}
-        >
-          <Text style={{ textAlign: "right" }}>الذهاب للواجهة</Text>
-        </Pressable>
-        <Pressable
-          onPress={() => navigation.navigate("Browse")}
-          style={{
-            padding: 12,
-            borderWidth: 1,
-            borderColor: "#eee",
-            borderRadius: 12,
-          }}
-        >
-          <Text style={{ textAlign: "right" }}>الفعاليات</Text>
-        </Pressable>
-        {isLoggedIn && accountType === "parent" && (
-          <Pressable
-            onPress={() => navigation.navigate("Children")}
-            style={{
-              padding: 12,
+              width: 56,
+              height: 56,
+              borderRadius: 28,
+              backgroundColor: "#f3efe1",
               borderWidth: 1,
               borderColor: "#eee",
-              borderRadius: 12,
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            <Text style={{ textAlign: "right" }}>أبنائي</Text>
+            <Ionicons name="person" size={24} color="#9a8f7a" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                textAlign: "right",
+                fontWeight: "700",
+                color: "#241c10",
+              }}
+            >
+              {user?.name || "—"}
+            </Text>
+            <Text style={{ textAlign: "right", color: "#666", marginTop: 2 }}>
+              {accountType === "parent" ? "ولي أمر" : "طالب"}
+            </Text>
+            <Text style={{ textAlign: "right", color: "#666", marginTop: 2 }}>
+              {user?.email || "—"}
+            </Text>
+            <Text style={{ textAlign: "right", color: "#666", marginTop: 2 }}>
+              {phone || user?.phone || "—"}
+            </Text>
+          </View>
+          <Pressable
+            onPress={() => navigation.navigate("AccountDetails")}
+            style={{ padding: 8, borderRadius: 10, backgroundColor: "#eaf4ef" }}
+          >
+            <Ionicons name="create" size={18} color="#1d3f2d" />
           </Pressable>
-        )}
-      </View> */}
+        </View>
+      ) : null}
+
+      <View
+        style={{
+          marginTop: 24,
+          backgroundColor: "#fff",
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: "#eee",
+        }}
+      >
+        {isLoggedIn ? (
+          <Pressable
+            onPress={() => navigation.navigate("AccountDetails")}
+            style={{
+              padding: 14,
+              flexDirection: "row-reverse",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ textAlign: "right" }}>تفاصيل الحساب</Text>
+            <Ionicons name="person" size={18} color="#241c10" />
+          </Pressable>
+        ) : null}
+        <View
+          style={{ height: 1, backgroundColor: "#eee", marginHorizontal: 12 }}
+        />
+        <Pressable
+          onPress={() => navigation.navigate("Invoices")}
+          style={{
+            padding: 14,
+            flexDirection: "row-reverse",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={{ textAlign: "right" }}>الفواتير</Text>
+          <Ionicons name="receipt" size={18} color="#241c10" />
+        </Pressable>
+        <View
+          style={{ height: 1, backgroundColor: "#eee", marginHorizontal: 12 }}
+        />
+        <Pressable
+          onPress={() => navigation.navigate("Terms")}
+          style={{
+            padding: 14,
+            flexDirection: "row-reverse",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={{ textAlign: "right" }}>الشروط والأحكام</Text>
+          <Ionicons name="document-text" size={18} color="#241c10" />
+        </Pressable>
+        <View
+          style={{ height: 1, backgroundColor: "#eee", marginHorizontal: 12 }}
+        />
+        <Pressable
+          onPress={() => Linking.openURL("tel:+96560000000")}
+          style={{
+            padding: 14,
+            flexDirection: "row-reverse",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={{ textAlign: "right" }}>اتصل بنا</Text>
+          <Ionicons name="call" size={18} color="#241c10" />
+        </Pressable>
+      </View>
 
       {isLoggedIn ? (
         <Pressable

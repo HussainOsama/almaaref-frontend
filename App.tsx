@@ -28,6 +28,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useAppStore } from "./src/store/app";
 import EventDetailsScreen from "./src/screens/EventDetailsScreen";
+import SelectChildrenScreen from "./src/screens/SelectChildrenScreen";
+import AccountDetailsScreen from "./src/screens/AccountDetailsScreen";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:1337";
 
@@ -194,6 +196,14 @@ export default function App() {
           <RootStack.Screen
             name="EventDetails"
             component={EventDetailsScreen}
+          />
+          <RootStack.Screen
+            name="SelectChildren"
+            component={SelectChildrenScreen}
+          />
+          <RootStack.Screen
+            name="AccountDetails"
+            component={AccountDetailsScreen}
           />
         </RootStack.Navigator>
       </NavigationContainer>
