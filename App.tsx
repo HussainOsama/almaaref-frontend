@@ -27,6 +27,7 @@ import SettingsScreen from "./src/screens/SettingsScreen";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useAppStore } from "./src/store/app";
+import EventDetailsScreen from "./src/screens/EventDetailsScreen";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:1337";
 
@@ -79,61 +80,7 @@ function EventsScreen({ navigation }: any) {
   );
 }
 
-function EventDetailsScreen({ route }: any) {
-  const { documentId } = route.params;
-  const [loading, setLoading] = useState(true);
-  const [event, setEvent] = useState<any>(null);
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await axios.get(`${API_URL}/api/events`, {
-          params: { "filters[documentId][$eq]": documentId, populate: "image" },
-        });
-        const item = res.data?.data?.[0] ?? null;
-        setEvent(item);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [documentId]);
-
-  if (loading) return <ActivityIndicator style={{ marginTop: 40 }} />;
-  if (!event) return <Text style={{ margin: 16 }}>Event not found</Text>;
-
-  const img = event?.image || event?.attributes?.image;
-  const url = img?.url || img?.data?.attributes?.url;
-
-  return (
-    <View style={{ padding: 16 }}>
-      {url ? (
-        <View style={{ marginBottom: 12 }}>
-          <Image
-            source={{ uri: `${API_URL}${url}` }}
-            style={{ width: "100%", aspectRatio: 1, borderRadius: 12 }}
-            resizeMode="cover"
-          />
-        </View>
-      ) : null}
-      <Text style={{ fontSize: 20, fontWeight: "700" }}>
-        {event.title || event.attributes?.title}
-      </Text>
-      <Text style={{ marginTop: 8 }}>
-        {event.description || event.attributes?.description}
-      </Text>
-      <Text style={{ marginTop: 8 }}>
-        {event.location || event.attributes?.location}
-      </Text>
-      <Text style={{ marginTop: 8 }}>
-        {event.date || event.attributes?.date}
-      </Text>
-      <Text style={{ marginTop: 8 }}>
-        {event.price || event.attributes?.price} KWD
-      </Text>
-    </View>
-  );
-}
+// EventDetailsScreen moved to src/screens/EventDetailsScreen.tsx
 
 const Stack = createNativeStackNavigator();
 function EventsStack() {
