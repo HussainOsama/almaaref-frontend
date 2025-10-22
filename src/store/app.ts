@@ -42,7 +42,7 @@ export const useAppStore = create<AppState>((set) => ({
   isLoggedIn: false,
   accountType: null,
   setIsLoggedIn: (v) => set({ isLoggedIn: v }),
-  setAccountType: (t) => set({ accountType: t })
+  setAccountType: (t) => set({ accountType: t }),
   token: undefined,
   setToken: (t?: string) => set({ token: t }),
   pendingEventDocumentId: undefined,

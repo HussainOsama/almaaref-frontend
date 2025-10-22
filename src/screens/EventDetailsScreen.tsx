@@ -159,6 +159,7 @@ export default function EventDetailsScreen({ route }: any) {
             navigation.navigate("SelectChildren", {
               eventDocumentId: documentId,
               eventPrice: price,
+              eventTitle: title,
             })
           }
           style={{

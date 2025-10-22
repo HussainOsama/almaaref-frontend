@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, FlatList, Pressable, Alert, Linking } from "react-native";
+import { View, Text, FlatList, Pressable, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute, useNavigation } from "@react-navigation/native";
+import * as WebBrowser from "expo-web-browser";
 import { useAppStore } from "../store/app";
 import {
   listRegistrationsForEventByParent,
@@ -14,7 +15,7 @@ import {
 export default function SelectChildrenScreen() {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
-  const { eventDocumentId, eventPrice } = route.params || {};
+  const { eventDocumentId, eventPrice, eventTitle } = route.params || {};
   const parentDocumentId = useAppStore((s) => s.parentDocumentId);
   const [children, setChildren] = useState<any[]>([]);
   const [registeredDocs, setRegisteredDocs] = useState<Set<string>>(new Set());
@@ -93,19 +94,36 @@ export default function SelectChildrenScreen() {
         customerPhone,
         customerEmail,
         orderId: `EV-${eventDocumentId}-${Date.now()}`,
+        orderDescription: eventTitle || "Event Registration",
         lang: "ar",
         methods: "all",
+        productName: eventTitle || "Event",
+        productDescription: eventTitle || "Event",
+        unitPrice: priceNum,
+        quantity: newDocs.length,
       });
+      console.log(charge);
       const redirectUrl = charge?.redirectUrl;
-      const chargeId = charge?.chargeId || charge?.id;
+      const chargeId = charge?.chargeId;
       if (!redirectUrl || !chargeId) throw new Error("فشل إنشاء عملية الدفع");
 
-      await Linking.openURL(redirectUrl);
-      const statusResp = await upaymentsGetStatus(chargeId);
-      const ok = /success|paid|approved/i.test(
-        String(statusResp?.status || "")
-      );
-      if (!ok) {
+      await WebBrowser.openBrowserAsync(redirectUrl, {
+        enableBarCollapsing: true,
+        showTitle: true,
+      });
+
+      // Poll for payment status after the in-app browser is closed
+      let statusOk = false;
+      for (let i = 0; i < 10; i++) {
+        await new Promise((r) => setTimeout(r, 3000));
+        const statusResp = await upaymentsGetStatus(chargeId);
+        const status = String(statusResp?.status || "").toLowerCase();
+        if (/success|paid|approved/.test(status)) {
+          statusOk = true;
+          break;
+        }
+      }
+      if (!statusOk) {
         Alert.alert("", "لم تكتمل عملية الدفع");
         setSaving(false);
         return;
